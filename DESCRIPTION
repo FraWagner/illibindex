@@ -1,0 +1,35 @@
+Package: illibindex
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Franziska", "Wagner", email ="franziska.wagner@cenia.cl", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4034-0232")),
+    person("Dean", "Schafer", role = c("aut"),
+           comment = c(ORCID = "")),
+    person("Mehmet", "Yavuz", role = c("aut"),
+           comment = c(ORCID = ""))
+           )
+Description: This package provides the code to create a scale of (il)liberalism
+              based on word embeddings and dictionary.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    dplyr,
+    magrittr,
+    quanteda,
+    rlang,
+    text2vec,
+    crayon,
+    progress,
+    tibble,
+    forcats,
+    ggplot2,
+    stats
+Depends: 
+    R (>= 3.5)
+LazyData: true
+Suggests: 
+    testthat (>= 1.0.0)
+Config/testthat/edition: 1
