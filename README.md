@@ -27,15 +27,7 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(illibindex)
-#> Warning: replacing previous import 'dplyr::lag' by 'stats::lag' when loading
-#> 'illibindex'
-#> Warning: replacing previous import 'dplyr::filter' by 'stats::filter' when
-#> loading 'illibindex'
-#> Warning: replacing previous import 'stats::filter' by 'dplyr::filter' when
-#> loading 'illibindex'
-#> Warning: replacing previous import 'dplyr::filter' by 'stats::filter' when
-#> loading 'illibindex'
-## basic example code
+## add basic example code
 ```
 
 ## Citation
