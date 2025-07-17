@@ -1,7 +1,45 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# illibindex
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of illibindex is to provide a simple way to implement the
+illiberalism index as used in the paper [“Measuring Illiberalism:
+Mapping Illiberalism in Seven Countries,
+2000-2022.”](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb)
+
 ## Installation
 
-You can install the development version of `illibindex` from GitHub with:
+You can install the development version of illibindex from
+[GitHub](https://github.com/) with:
 
-```r
-# install.packages("devtools")
-devtools::install_github("FraWagner/illibindex")
+``` r
+# install.packages("pak")
+pak::pak("FraWagner/illibindex")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+``` r
+library(illibindex)
+#> Warning: replacing previous import 'dplyr::lag' by 'stats::lag' when loading
+#> 'illibindex'
+#> Warning: replacing previous import 'dplyr::filter' by 'stats::filter' when
+#> loading 'illibindex'
+#> Warning: replacing previous import 'stats::filter' by 'dplyr::filter' when
+#> loading 'illibindex'
+#> Warning: replacing previous import 'dplyr::filter' by 'stats::filter' when
+#> loading 'illibindex'
+## basic example code
+```
+
+## Citation
+
+Please cite the package using the [pre
+print](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb)
+DOI: \<10.33774/apsa-2025-xdd54-v2\>
