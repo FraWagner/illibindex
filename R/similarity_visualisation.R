@@ -1,4 +1,5 @@
 #' Plot Similarity Scores for Words in a Political Context
+#' @export
 #' @import stats
 #' @importFrom ggplot2 ggplot aes geom_point geom_linerange geom_hline facet_wrap theme_bw theme element_text position_dodge
 #' @importFrom dplyr filter mutate %>%
