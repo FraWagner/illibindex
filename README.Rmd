@@ -31,11 +31,14 @@ pak::pak("FraWagner/illibindex")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to use the package:
 
 ```{r example}
 library(illibindex)
-## basic example code
+
+train_word_embeddings()
+calc_cosSim()
+plot_libVillib_wordfacet()
 ```
 
 ## Citation

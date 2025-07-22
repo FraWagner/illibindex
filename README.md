@@ -4,6 +4,7 @@
 # illibindex
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 The goal of illibindex is to provide a simple way to implement the
@@ -21,17 +22,13 @@ You can install the development version of illibindex from
 pak::pak("FraWagner/illibindex")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+## Import Library
 
 ``` r
 library(illibindex)
-## add basic example code
 ```
 
 ## Citation
 
 Please cite the package using the [pre
 print](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb)
-DOI: \<10.33774/apsa-2025-xdd54-v2\>
