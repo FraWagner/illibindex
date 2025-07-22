@@ -30,7 +30,7 @@ train_word_embeddings <- function(corpus = NULL,
                                   min_docs = 50,
                                   output_dir = "./models_wordembeddings/") {
   if (is.null(corpus)) {
-    data("corpus_ITA", package = "illibIndex")
+    data("corpus_ITA", package = "illibindex")
     corpus <- corpus_ITA
   }
 
