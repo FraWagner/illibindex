@@ -1,5 +1,24 @@
-#' @importFrom quanteda docvars "docvars<-" tokens_subset featnames tokens_keep fcm
-#' @importFrom text2vec GlobalVectors
+#' Train word embeddings from a corpus
+#'
+#' This function trains GloVe-based word embeddings for individual speakers across years,
+#' using a bootstrapping procedure on a quanteda corpus object.
+#'
+#' @param corpus A quanteda tokens object. If NULL, uses internal data for Italy.
+#' @param model_name A custom name to label your saved models.
+#' @param country A string indicating the country (used in folder structure).
+#' @param speaker_party The docvar indicating actor name.
+#' @param num_bootstraps Number of bootstrap samples per year.
+#' @param window_size The size of the context window.
+#' @param drop_parties A vector of actors to exclude.
+#' @param min_docs Minimum number of documents required per year.
+#' @param output_dir Path to the directory for storing models (relative to working directory).
+#' @return Saves RDS files with word embeddings; returns nothing.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' train_word_embeddings(corpus = your_tokens_object)
+#' }
 
 train_word_embeddings <- function(corpus = NULL,
                                   model_name = "model1",
@@ -33,7 +52,7 @@ train_word_embeddings <- function(corpus = NULL,
   set.seed(1999)
 
   for (name in actors) {
-    cat(crayon::yellow("\nTraining word embeddings for", name, "... "))
+    message("Training word embeddings for ", name, " for year ", y, "...")
     corpus <- tokens_subset(corpus_all, Speaker_party == name)
 
     for (y in years) {

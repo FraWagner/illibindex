@@ -18,7 +18,7 @@ load_word_embeddings(
 \item{output_dir}{Directory where models are saved}
 }
 \value{
-A character vector of loaded word embeddings
+A named list of word embedding matrices (or lists of matrices) loaded from .rds files
 }
 \description{
 Load saved word embeddings

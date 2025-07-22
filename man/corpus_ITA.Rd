@@ -5,10 +5,13 @@
 \alias{corpus_ITA}
 \title{Example Corpus: Italian Parliamentary Speeches (2018–2022)}
 \format{
-A \code{quanteda} tokens object with docvars: \code{Speaker_party}, \code{year_month}, \code{Speaker_party}.
+A \code{quanteda} tokens object with docvars such as: \code{Speaker_party}, \code{year_month}.
+}
+\source{
+https://clarin.si/repository/xmlui/handle/11356/1864
 }
 \usage{
-data(corpus_HU_8parties_2014_2023)
+data(corpus_ITA)
 }
 \description{
 A tokenized \code{quanteda} tokens object from Italian parties.

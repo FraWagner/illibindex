@@ -3,8 +3,8 @@
 #' @param country Country name used during training (e.g., "Italy")
 #' @param model_name Model identifier used in training (e.g., "model1")
 #' @param output_dir Directory where models are saved
-#'
-#' @return A character vector of loaded word embeddings
+#' @return A named list of word embedding matrices (or lists of matrices) loaded from .rds files
+
 load_word_embeddings <- function(country = "Italy",
                                  model_name = "model1",
                                  output_dir = "./models_wordembeddings/") {
