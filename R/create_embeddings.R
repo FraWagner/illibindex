@@ -58,7 +58,6 @@ train_word_embeddings <- function(corpus = NULL,
   set.seed(1999)
 
   for (name in actors) {
-    message("Training word embeddings for ", name, " for year ", y, "...")
     corpus <- tokens_subset(corpus_all, Speaker_party == name)
 
     for (y in years) {
