@@ -13,6 +13,12 @@
 #' @param min_docs Minimum number of documents required per year.
 #' @param output_dir Path to the directory for storing models (relative to working directory).
 #' @return Saves RDS files with word embeddings; returns nothing.
+#' @import quanteda
+#' @importFrom text2vec GlobalVectors
+#' @importFrom tools file_path_sans_ext
+#' @importFrom utils data
+#' @importFrom crayon blue red yellow
+#' 
 #' @export
 #'
 #' @examples
@@ -35,15 +41,15 @@ train_word_embeddings <- function(corpus = NULL,
   }
 
   corpus_all <- corpus
-  quanteda::docvars(corpus_all, "actor_name") <- docvars(corpus_all, speaker_party)
+  docvars(corpus_all, "actor_name") <- docvars(corpus_all, speaker_party)
 
   # Filter actors
-  actors <- na.omit(unique(quanteda::docvars(corpus_all, "actor_name")))
+  actors <- na.omit(unique(docvars(corpus_all, "actor_name")))
   actors <- actors[!(actors %in% drop_parties)]
 
   # Get unique years
-  quanteda::docvars(corpus_all, "year") <- as.integer(substr(quanteda::docvars(corpus_all, "year_month"), 1, 4))
-  years <- sort(unique(quanteda::docvars(corpus_all, "year")))
+  docvars(corpus_all, "year") <- as.integer(substr(docvars(corpus_all, "year_month"), 1, 4))
+  years <- sort(unique(docvars(corpus_all, "year")))
 
   # Create output directory
   dir_path <- file.path(output_dir, country, paste0(model_name, "_years"))
