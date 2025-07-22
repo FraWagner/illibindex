@@ -35,15 +35,15 @@ train_word_embeddings <- function(corpus = NULL,
   }
 
   corpus_all <- corpus
-  docvars(corpus_all, "actor_name") <- docvars(corpus_all, speaker_party)
+  quanteda::docvars(corpus_all, "actor_name") <- docvars(corpus_all, speaker_party)
 
   # Filter actors
-  actors <- na.omit(unique(docvars(corpus_all, "actor_name")))
+  actors <- na.omit(unique(quanteda::docvars(corpus_all, "actor_name")))
   actors <- actors[!(actors %in% drop_parties)]
 
   # Get unique years
-  docvars(corpus_all, "year") <- as.integer(substr(docvars(corpus_all, "year_month"), 1, 4))
-  years <- sort(unique(docvars(corpus_all, "year")))
+  quanteda::docvars(corpus_all, "year") <- as.integer(substr(quanteda::docvars(corpus_all, "year_month"), 1, 4))
+  years <- sort(unique(quanteda::docvars(corpus_all, "year")))
 
   # Create output directory
   dir_path <- file.path(output_dir, country, paste0(model_name, "_years"))
