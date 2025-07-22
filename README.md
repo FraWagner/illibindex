@@ -8,9 +8,9 @@
 <!-- badges: end -->
 
 The goal of illibindex is to provide a simple way to implement the
-illiberalism index as used in the paper [“Measuring Illiberalism:
+illiberalism index as used in the papers [“Measuring Illiberalism:
 Mapping Illiberalism in Seven Countries,
-2000-2022.”](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb)
+2000-2022”](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb) and ["Opposition to Government and Back: How Illiberal Parties Shape Immigration Discourse and Party Competition"](https://www.cogitatiopress.com/politicsandgovernance/article/view/9609).
 
 ## Installation
 
