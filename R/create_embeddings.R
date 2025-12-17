@@ -1,9 +1,9 @@
 #' Train word embeddings from a corpus
 #'
-#' This function trains GloVe-based word embeddings for individual speakers across years,
-#' using a bootstrapping procedure on a quanteda corpus object.
+#' This function trains GloVe-based word embeddings for individual speakers
+#' using a bootstrapping procedure on a \code{quanteda::tokens} object.
 #'
-#' @param corpus A quanteda tokens object. If NULL, uses internal data for Italy.
+#' @param corpus A tokenized quanteda corpus. Defaults to \code{corpus_ITA}.
 #' @param model_name A custom name to label your saved models.
 #' @param country A string indicating the country (used in folder structure).
 #' @param speaker_party The docvar indicating actor name.
@@ -19,6 +19,11 @@
 #' @importFrom utils data
 #' @importFrom crayon blue red yellow
 #' 
+#' @details
+#' If \code{corpus} is \code{NULL}, the function uses a built-in Italian
+#' tokens corpus shipped with the package. For other countries, users
+#' must supply their own tokens object.
+#' 
 #' @export
 #'
 #' @examples
@@ -26,20 +31,37 @@
 #' train_word_embeddings(corpus = your_tokens_object)
 #' }
 
-train_word_embeddings <- function(corpus = NULL,
-                                  model_name = "model1",
-                                  country = "Italy",
-                                  speaker_party = "Speaker_party",
-                                  num_bootstraps = 100,
-                                  window_size = 10,
-                                  drop_parties = c("RE"),
-                                  min_docs = 50,
-                                  output_dir = "./models_wordembeddings/") {
-  if (is.null(corpus)) {
-    data("corpus_ITA", package = "illibindex")
-    corpus <- corpus_ITA
+train_word_embeddings <- function(
+    corpus = corpus_ITA,
+    model_name = "model1",
+    country = "Italy",
+    speaker_party = "Speaker_party",
+    num_bootstraps = 100,
+    window_size = 10,
+    drop_parties = c("RE"),
+    min_docs = 50,
+    output_dir = "./models_wordembeddings/"
+) {
+  
+  # ---- Validate corpus (tokens only) ----
+  if (!inherits(corpus, "tokens")) {
+    stop(
+      "`corpus` must be a quanteda::tokens object.\n",
+      "If you want to use a data.frame, please tokenize it first.",
+      call. = FALSE
+    )
   }
-
+  
+  # ---- Optional safety check ----
+  if (quanteda::ndoc(corpus) == 0) {
+    stop("The tokens object contains no documents.", call. = FALSE)
+  }
+  
+  # ---- Output directory ----
+  if (!is.null(output_dir)) {
+    dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+  
   corpus_all <- corpus
   docvars(corpus_all, "actor_name") <- docvars(corpus_all, speaker_party)
 

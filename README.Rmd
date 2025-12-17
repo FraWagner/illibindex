@@ -29,18 +29,12 @@ You can install the development version of illibindex from [GitHub](https://gith
 pak::pak("FraWagner/illibindex")
 ```
 
-## Example
+## Import Library
 
-This is a basic example which shows you how to use the package:
-
-```{r example}
+```{r example, warning=FALSE}
 library(illibindex)
-
-train_word_embeddings()
-calc_cosSim()
-plot_libVillib_wordfacet()
 ```
 
 ## Citation
 
-Please cite the package using the [pre print](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb) DOI:  <10.33774/apsa-2025-xdd54-v2> 
+Please cite the package using the [pre print](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb)

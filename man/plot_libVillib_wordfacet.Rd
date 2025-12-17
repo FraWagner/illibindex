@@ -4,7 +4,23 @@
 \alias{plot_libVillib_wordfacet}
 \title{Plot Similarity Scores for Words in a Political Context}
 \usage{
-plot_libVillib_wordfacet(country = "Italy", model = "model1")
+plot_libVillib_wordfacet(
+  country = "Italy",
+  model = "model1",
+  results = NULL,
+  use_demo = TRUE
+)
+}
+\arguments{
+\item{country}{Character string specifying the country.}
+
+\item{model}{Character string specifying the model identifier.}
+
+\item{results}{Optional. A results object from calc_cosSim(). If NULL,
+will attempt to load from file or use demo_results as fallback.}
+
+\item{use_demo}{Logical. If TRUE and no results file found, use demo_results.
+Default is TRUE.}
 }
 \description{
 Plot Similarity Scores for Words in a Political Context

@@ -7,19 +7,21 @@
 load_word_embeddings(
   country = "Italy",
   model_name = "model1",
-  output_dir = "./models_wordembeddings/"
+  output_dir = NULL
 )
 }
 \arguments{
-\item{country}{Country name used during training (e.g., "Italy")}
+\item{country}{Country name used during training (e.g., "Italy").}
 
-\item{model_name}{Model identifier used in training (e.g., "model1")}
+\item{model_name}{Model identifier used in training (e.g., "model1").}
 
-\item{output_dir}{Directory where models are saved}
+\item{output_dir}{Directory where models are saved.}
 }
 \value{
-A named list of word embedding matrices (or lists of matrices) loaded from .rds files
+A named list of word embedding matrices (or lists of matrices)
+loaded from \code{.rds} files.
 }
 \description{
-Load saved word embeddings
+Load word embeddings previously created with
+\code{train_word_embeddings()}.
 }

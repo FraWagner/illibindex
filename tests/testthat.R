@@ -7,6 +7,7 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(illibIndex)
+library(illibindex)
 
-test_check("illibIndex")
+test_check("illibindex")
+

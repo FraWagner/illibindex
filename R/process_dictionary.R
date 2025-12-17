@@ -1,52 +1,79 @@
-#' @import dplyr
-#' @importFrom utils data
-#' @importFrom stats na.omit filter
+#' Process a dictionary into liberal and illiberal term lists
+#'
+#' @param dataset A named list of dictionary data frames.
+#' @param which Name of the dictionary to extract.
+#'
+#' @return A named list with elements:
+#' \describe{
+#'   \item{terms}{Character vector of dictionary terms}
+#'   \item{liberal}{Named list of liberal term vectors}
+#'   \item{illiberal}{Named list of illiberal term vectors}
+#' }
+#'
+#' @examples
+#' data(dictionaries)
+#' process_dictionary(dictionaries, "immigration")
+#'
 #' @importFrom dplyr filter pull
+#' @importFrom stats na.omit setNames
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
-
-process_dictionary <- function(dataset = df_list, which) {
-  # Check if dataset exists
-  if (!exists("df_list")) {
-    stop("The dictionary object is not loaded.")
+#'
+#' @export
+process_dictionary <- function(dataset = dictionaries, which) {
+  
+  if (!is.list(dataset)) {
+    stop("`dataset` must be a named list of dictionaries.", call. = FALSE)
   }
-
-  # Check if the requested dictionary exists
-  if (!which %in% names(df_list)) {
-    stop(paste("The specified dictionary", which, "does not exist in your dictionary list."))
+  
+  if (missing(which) || !which %in% names(dataset)) {
+    stop(
+      sprintf(
+        "Dictionary '%s' not found. Available: %s",
+        which,
+        paste(names(dataset), collapse = ", ")
+      ),
+      call. = FALSE
+    )
   }
-
+  
   dict <- dataset[[which]]
-
-  # Get the main terms
-  terms <- dict %>%
-    dplyr::filter(.data$country == "all") %>%
-    dplyr::filter(!is.na(.data$term)) %>%
-    dplyr::pull("term")
-
-  assign("terms", terms, envir = .GlobalEnv)
-
-  # Loop through each term to create separate environment variables
-  for (i in terms) {
-    # Extract liberal terms
-    dict_lib <- dict %>%
-      dplyr::filter(.data$country == "all") %>%
-      dplyr::pull(paste0(i, "_liberal")) %>%
-      stats::na.omit() %>%
-      as.vector()
-
-    # Extract illiberal terms
-    dict_illib <- dict %>%
-      dplyr::filter(.data$country == "all") %>%
-      dplyr::pull(paste0(i, "_illiberal")) %>%
-      stats::na.omit() %>%
-      as.vector()
-
-    # Assign to the global environment with dynamically generated names
-    assign(paste0(i, "_liberal"), dict_lib, envir = .GlobalEnv)
-    assign(paste0(i, "_illiberal"), dict_illib, envir = .GlobalEnv)
+  
+  # ---- derive terms from column names ONLY ----
+  terms <- unique(
+    sub("_(liberal|illiberal)$", "",
+        grep("^[a-zA-Z].*_(liberal|illiberal)$",
+             names(dict),
+             value = TRUE))
+  )
+  
+  if (length(terms) == 0) {
+    stop("No *_liberal / *_illiberal columns found.", call. = FALSE)
   }
-
-  # Return extracted terms (not necessary but useful)
-  return(terms)
+  
+  liberal   <- stats::setNames(vector("list", length(terms)), terms)
+  illiberal <- stats::setNames(vector("list", length(terms)), terms)
+  
+  for (term in terms) {
+    cat("\n\nProcessing term:", term, "\n")
+    
+    # Create column names OUTSIDE the pipe
+    lib_col <- paste0(term, "_liberal")
+    illib_col <- paste0(term, "_illiberal")
+    
+    liberal[[term]] <- dict %>%
+      dplyr::filter(.data$country == "all") %>%
+      dplyr::pull(!!lib_col) %>%  # Use !! to unquote, or just use the variable directly
+      stats::na.omit() %>%
+      as.character()
+    
+    illiberal[[term]] <- dict %>%
+      dplyr::filter(.data$country == "all") %>%
+      dplyr::pull(!!illib_col) %>%
+      stats::na.omit() %>%
+      as.character()
+    
+    cat("Success!\n")
+  }
 }
+

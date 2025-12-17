@@ -5,7 +5,7 @@
 \title{Train word embeddings from a corpus}
 \usage{
 train_word_embeddings(
-  corpus = NULL,
+  corpus = corpus_ITA,
   model_name = "model1",
   country = "Italy",
   speaker_party = "Speaker_party",
@@ -17,7 +17,7 @@ train_word_embeddings(
 )
 }
 \arguments{
-\item{corpus}{A quanteda tokens object. If NULL, uses internal data for Italy.}
+\item{corpus}{A tokenized quanteda corpus. Defaults to \code{corpus_ITA}.}
 
 \item{model_name}{A custom name to label your saved models.}
 
@@ -39,8 +39,13 @@ train_word_embeddings(
 Saves RDS files with word embeddings; returns nothing.
 }
 \description{
-This function trains GloVe-based word embeddings for individual speakers across years,
-using a bootstrapping procedure on a quanteda corpus object.
+This function trains GloVe-based word embeddings for individual speakers
+using a bootstrapping procedure on a \code{quanteda::tokens} object.
+}
+\details{
+If \code{corpus} is \code{NULL}, the function uses a built-in Italian
+tokens corpus shipped with the package. For other countries, users
+must supply their own tokens object.
 }
 \examples{
 \dontrun{

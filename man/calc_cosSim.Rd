@@ -8,24 +8,28 @@ calc_cosSim(
   country = "Italy",
   model = "model1",
   which = "immigration",
-  output_dir = "./models_cosSim_ci/"
+  output_dir = NULL,
+  save = FALSE,
+  embeddings_path = NULL
 )
 }
 \arguments{
-\item{country}{Character string specifying the country name}
+\item{country}{Character string specifying the country name.}
 
-\item{output_dir}{Character string specifying output directory (default: "./models_cosSim_ci/")}
+\item{model}{Character string specifying model identifier.}
 
-\item{model_overall}{Character string specifying model identifier}
+\item{which}{Character string specifying which dictionary to use
+(e.g. "immigration", "gender").}
 
-\item{word_lists}{List of word vectors to analyze}
+\item{output_dir}{Character string. Output directory if \code{save = TRUE}.}
 
-\item{list_names}{Character vector of dictionary names}
+\item{save}{Logical. Whether to save results to disk.}
 
-\item{wordvecs_list}{Character vector of word vector names}
+\item{embeddings_path}{Character. Path to a directory containing
+pre-trained word embeddings.}
 }
 \value{
-DataFrame of cosine similarity results
+A data frame with cosine similarity results.
 }
 \description{
 Calculate Cosine Similarity for Text Analysis

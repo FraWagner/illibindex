@@ -1,11 +1,13 @@
+citHeader("To cite illibindex in publications:")
+
 bibentry(
   bibtype  = "Article",
   title    = "Measuring Illiberalism: Mapping Illiberalism in Seven Countries, 2000-2022",
   author   = "Dean Schafer, Franziska Wagner, Mehmet Yavuz",
-  journal  = ,
+  journal  = "Political Science Research and Methods",
   year     = 2025,
-  volume   = ,
-  number   = ,
-  pages    = ,
+  volume   = "xxx",
+  number   = "xxx",
+  pages    = "xxx",
   doi      = 10.33774/apsa-2025-xdd54-v2
 )

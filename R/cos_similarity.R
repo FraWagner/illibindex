@@ -7,34 +7,71 @@
 #' @importFrom stats sd
 #' @importFrom dplyr bind_rows bind_cols
 #' @importFrom tibble rownames_to_column
+#' @importFrom stats reorder
 #'
-#' @param country Character string specifying the country name
-#' @param model_overall Character string specifying model identifier
-#' @param word_lists List of word vectors to analyze
-#' @param list_names Character vector of dictionary names
-#' @param wordvecs_list Character vector of word vector names
-#' @param output_dir Character string specifying output directory (default: "./models_cosSim_ci/")
-#' @return DataFrame of cosine similarity results
+#' @param country Character string specifying the country name.
+#' @param model Character string specifying model identifier.
+#' @param which Character string specifying which dictionary to use
+#'   (e.g. "immigration", "gender").
+#' @param output_dir Character string specifying output directory.
+#'@param embeddings_path Character. Path to a directory containing
+#' pre-trained word embeddings.
+#' @param save Logical. Whether to save results to disk.
+#' @param output_dir Character string. Output directory if \code{save = TRUE}.
+#' @return A data frame with cosine similarity results.
 #' @export
 
 
-calc_cosSim <- function(country = "Italy",
-                        model = "model1",
-                        which = "immigration",
-                        output_dir = "./models_cosSim_ci/") {
-  # Initialize style colors
+
+
+calc_cosSim <- function(
+    country = "Italy",
+    model = "model1",
+    which = "immigration",
+    output_dir = NULL,
+    save = FALSE,
+    embeddings_path = NULL
+) {
+  
   styles <- initialize_styles()
-
-  # load word embeddings
-  wordvecs_list <- load_word_embeddings()
-
-  # load dictionary terms
+  
+  # ---- Check embeddings ----
+  if (is.null(embeddings_path)) {
+    stop(
+      paste(
+        "No word embeddings supplied.\n\n",
+        "Please either:\n",
+        "1) Provide a path via `embeddings_path`, or\n",
+        "2) Run `train_word_embeddings(country = \"", country,
+        "\", model = \"", model, "\")` first.",
+        sep = ""
+      ),
+      call. = FALSE
+    )
+  }
+  
+  if (!file.exists(embeddings_path)) {
+    stop(
+      "The supplied embeddings file does not exist:\n",
+      embeddings_path,
+      call. = FALSE
+    )
+  }
+  
+  # ---- Load embeddings ----
+  wordvecs_list <- load_word_embeddings(
+    country    = country,
+    model_name = model,
+    output_dir = embeddings_path
+  )
+  
   terms <- process_dictionary(which = which)
-
+  
   word_lists <- list(terms)
-  list_names <- terms
-
-  # Initialize results dataframe
+  names(word_lists) <- which
+  
+  list_names <- names(word_lists)
+  
   df_results <- data.frame()
 
   # Process each word embedding vector
@@ -52,7 +89,7 @@ calc_cosSim <- function(country = "Italy",
 
       # Print a message indicating the current vector being processed
       cat(crayon::yellow$underline(paste0(
-        "\n\n • Getting vector for --",
+        "\n\n Getting vector for --",
         crayon::bold(model_name), "-- for --",
         crayon::bold(word_list_name), "-- word list "
       )))
@@ -80,26 +117,26 @@ calc_cosSim <- function(country = "Italy",
         pb <- progress::progress_bar$new(
           format = "  Progress [:bar] :percent Elapsed: :elapsed",
           total = length(current_model),
-          clear = TRUE, # Allow the progress bar to be cleared after completion
+          clear = TRUE,
           width = 60
         )
-      }
 
-      for (i in 1:length(current_model)) {
-        # update the progress bar
-        pb$tick()
-
-        # Extract the word vectors for the current bootstrapped sample
-        word_vectors <- current_model[[i]]
-        # Moving the trycatch here becomes SOME of the embeddings might be missing the term
-        tryCatch(
-          {
-            # Extract the vec_currentword value for the current word
-            # add check for current word:
-            if (!(current_word %in% rownames(word_vectors))) {
-              warning(paste("Word", current_word, "not found in word vectors. Skipping."))
-              next
-            }
+        # THIS LOOP SHOULD BE INSIDE THE WORD LOOP
+        for (i in 1:length(current_model)) {
+          # update the progress bar
+          pb$tick()
+          
+          # Extract the word vectors for the current bootstrapped sample
+          word_vectors <- current_model[[i]]
+          # Moving the trycatch here becomes SOME of the embeddings might be missing the term
+          tryCatch(
+            {
+              # Extract the vec_currentword value for the current word
+              # add check for current word:
+              if (!(current_word %in% rownames(word_vectors))) {
+                warning(paste("Word", current_word, "not found in word vectors. Skipping."))
+                next
+              }
             vec_currentword <- word_vectors[current_word, , drop = FALSE]
             # Compute the cosine similarity matrix for the current model
             cos_sim <- sim2(x = word_vectors, y = vec_currentword, method = "cosine", norm = "l2")
@@ -135,13 +172,10 @@ calc_cosSim <- function(country = "Italy",
             LibIllibscores <- c(LibIllibscores, LibIllib_score)
           },
           error = function(e) {
-            # If an error occurs, set the result to NA and continue to the next iteration
-            # result_list_word_list[[word_idx]] <- NA
             cat(crayon::red(" ...error calculating", crayon::red$bold(current_word), "... "))
-            # cat(crayon::red("."))
           }
-        )
-      }
+          )
+        } 
       # removing missing values
       lib_scores <- na.omit(lib_scores)
       illib_scores <- na.omit(illib_scores)
@@ -192,39 +226,70 @@ calc_cosSim <- function(country = "Italy",
       # clearing wordall
       wordall <- NA
       cat("\U0001F44D", crayon::green("... ")) # thumps up! It worked
-
+      }
 
       # clearing up any missing values
-      collect_LibIllib <- na.omit(collect_LibIllib)
-      # adding average of the LibIllib scores for policy dictionary
-      ave_Libillib <- data.frame(
-        mean = mean(collect_LibIllib),
-        sd = sd(collect_LibIllib),
-        lowerci = mean(collect_LibIllib) - 1.96 * sd(collect_LibIllib) / sqrt(length(collect_LibIllib)),
-        upperci = mean(collect_LibIllib) + 1.96 * sd(collect_LibIllib) / sqrt(length(collect_LibIllib)),
-        dimension = "LibIllib",
-        Policy = word_list_name,
-        Party = actor_name,
-        Time = time,
-        word = "AVERAGE"
-      )
-      # store in the df
-      df_results <- bind_rows(df_results, ave_Libillib)
+      collect_LibIllib <- as.vector(na.omit(collect_LibIllib))
+      
+      # Check if we have any valid data before creating the summary
+      if (length(collect_LibIllib) > 0) {
+        # Calculate statistics
+        mean_val <- mean(collect_LibIllib)
+        sd_val <- sd(collect_LibIllib)
+        n_val <- length(collect_LibIllib)
+        
+        # Handle case where sd is NA (happens with n=1)
+        if (is.na(sd_val)) {
+          sd_val <- 0
+        }
+        
+        # adding average of the LibIllib scores for policy dictionary
+        ave_Libillib <- data.frame(
+          mean = mean_val,
+          sd = sd_val,
+          lowerci = mean_val - 1.96 * sd_val / sqrt(n_val),
+          upperci = mean_val + 1.96 * sd_val / sqrt(n_val),
+          dimension = "LibIllib",
+          Policy = word_list_name,
+          Party = actor_name,
+          Time = time,
+          word = "AVERAGE",
+          stringsAsFactors = FALSE
+        )
+        # store in the df
+        df_results <- bind_rows(df_results, ave_Libillib)
+      } else {
+        warning(paste("No valid LibIllib scores collected for", word_list_name))
+      }
     }
   }
 
-  # assign the boostrapped word vectors to a object named for each party
-  assign(paste0("results_", word_list_name), df_results)
-  # saving the word embeddings model
-  dir <- paste0("./models_cosSim_ci/", country, "/", model)
-  if (!dir.exists(dir)) {
-    dir.create(dir, recursive = TRUE)
+  # collect results in a named list
+  results <- list()
+  results[[word_list_name]] <- df_results
+  
+  # optionally save results to disk
+  if (isTRUE(save)) {
+    
+    if (is.null(output_dir)) {
+      stop("If save = TRUE, you must provide output_dir.", call. = FALSE)
+    }
+    
+    dir <- file.path(output_dir, country, model)
+    
+    if (!dir.exists(dir)) {
+      dir.create(dir, recursive = TRUE)
+    }
+    
+    saveRDS(
+      results,
+      file = file.path(dir, paste0("results_", word_list_name, ".rds"))
+    )
   }
-  save(
-    list = (paste0("results_", word_list_name)),
-    file = paste0(dir, "/results_", word_list_name, ".RData")
-  )
+  
+  return(results)
 }
+
 
 
 # Helper Functions --------------------------------------------------------
