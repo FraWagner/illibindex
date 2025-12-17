@@ -47,9 +47,6 @@ library(illibindex)
 
 # Load the demo cosine similarity results
 data(demo_cossim_IT)
-
-# View the structure
-head(demo_cossim_IT)
 ```
 
 ## Working with Dictionaries
