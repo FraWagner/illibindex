@@ -4,7 +4,7 @@
 #' @param model Character string specifying the model identifier.
 #' @param results Optional. A results object from calc_cosSim(). If NULL, 
 #'   will attempt to load from file or use demo_results as fallback.
-#' @param use_demo Logical. If TRUE and no results file found, use demo_results. 
+#' @param use_demo Logical. If TRUE and no results file found, use demo_cossim_IT. 
 #'   Default is TRUE.
 #' 
 #' @export
@@ -45,9 +45,8 @@ plot_libVillib_wordfacet <- function(
         stop("No results files found and use_demo = FALSE.")
       }
     } else if (use_demo) {
-      # Use demo data if directory doesn't exist
-      message("Directory not found. Using demo_results.")
-      df_results <- demo_results[[1]]
+      message("No results files found. Using demo_cossim_IT.")
+      df_results <- demo_cossim_IT[[1]]
     } else {
       stop("Directory not found and use_demo = FALSE.")
     }

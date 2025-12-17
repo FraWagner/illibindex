@@ -19,7 +19,7 @@ plot_libVillib_wordfacet(
 \item{results}{Optional. A results object from calc_cosSim(). If NULL,
 will attempt to load from file or use demo_results as fallback.}
 
-\item{use_demo}{Logical. If TRUE and no results file found, use demo_results.
+\item{use_demo}{Logical. If TRUE and no results file found, use demo_cossim_IT.
 Default is TRUE.}
 }
 \description{
