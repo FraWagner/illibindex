@@ -63,7 +63,7 @@ process_dictionary <- function(dataset = dictionaries, which) {
     
     liberal[[term]] <- dict %>%
       dplyr::filter(.data$country == "all") %>%
-      dplyr::pull(!!lib_col) %>%  # Use !! to unquote, or just use the variable directly
+      dplyr::pull(!!lib_col) %>%  
       stats::na.omit() %>%
       as.character()
     
