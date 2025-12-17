@@ -9,32 +9,227 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  eval = FALSE  # Set to TRUE when you have real data to run examples
 )
 ```
 
 # illibindex
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/FraWagner/illibindex/workflows/R-CMD-check/badge.svg)](https://github.com/FraWagner/illibindex/actions)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of illibindex is to provide a simple way to implement the illiberalism index as used in the paper ["Measuring Illiberalism: Mapping Illiberalism in Seven Countries, 2000-2022."](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb) 
+## Overview
+
+**illibindex** measures liberal and illiberal rhetoric in political discourse using word embeddings and cosine similarity. The package helps researchers quantify how political actors position themselves on policy issues by comparing their language to predefined liberal and illiberal vocabularies.
+
+### Key Features
+
+- 📚 **Pre-built dictionaries** for immigration, gender, and other policy domains
+- 🧠 **Word embedding training** using GloVe with bootstrap resampling
+- 📊 **Cosine similarity analysis** to measure ideological positioning
+- 🎯 **Flexible workflow** from text to validated measurements
 
 ## Installation
 
-You can install the development version of illibindex from [GitHub](https://github.com/) with:
+Install the development version from GitHub:
 
-``` r
-# install.packages("pak")
-pak::pak("FraWagner/illibindex")
+```{r eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("FraWagner/illibindex")
 ```
 
-## Import Library
+## Quick Example
 
-```{r example, warning=FALSE}
+Here's a simple workflow showing how to use the package:
+
+```{r quick-example}
 library(illibindex)
+
+# 1. Load built-in dictionaries
+data(dictionaries)
+
+# 2. Process the immigration dictionary
+immigration_dict <- process_dictionary(dictionaries, "immigration")
+
+# 3. View available terms
+immigration_dict$terms
+#> [1] "immigra" "border"  "asylum"  "migrat"  "migrant"
+
+# 4. Examine liberal terms for "immigra"
+head(immigration_dict$liberal$immigra)
+#> [1] "welcome"     "diversity"   "integrate"   "opportunity" 
+#> [5] "refuge"      "compassion"
+
+# 5. Examine illiberal terms for "immigra"
+head(immigration_dict$illiberal$immigra)
+#> [1] "illegal"   "invasion"  "threat"    "criminal"  
+#> [5] "deport"    "close"
+```
+
+## Full Workflow
+
+### Step 1: Prepare Your Text Data
+
+Your corpus should be organized with metadata identifying the political actor and time period:
+
+```{r data-prep}
+# Example structure (your actual data)
+corpus_df <- data.frame(
+  text = c("We must welcome refugees...", "Close the borders..."),
+  actor = c("Party_A", "Party_B"),
+  time = c("2020", "2020"),
+  country = c("Italy", "Italy")
+)
+```
+
+### Step 2: Train Word Embeddings
+
+Train domain-specific word embeddings for each actor and time period:
+
+```{r train-embeddings}
+# Train embeddings with bootstrap resampling
+train_word_embeddings(
+  country = "Italy",
+  model = "model1",
+  output_dir = "output/embeddings",
+  n_bootstrap = 100,        # Number of bootstrap samples
+  window_size = 6,          # Context window
+  dim = 300                 # Embedding dimensions
+)
+
+# This creates files like:
+# output/embeddings/Italy/model1/wordvecs_PartyA_2020.rds
+# output/embeddings/Italy/model1/wordvecs_PartyB_2020.rds
+```
+
+### Step 3: Calculate Cosine Similarity
+
+Measure how close each actor's language is to liberal vs. illiberal terms:
+
+```{r calc-similarity}
+# Calculate similarity scores
+results <- calc_cosSim(
+  country = "Italy",
+  model = "model1",
+  which = "immigration",
+  embeddings_path = "output/embeddings/Italy/model1",
+  save = TRUE,
+  output_dir = "output/results"
+)
+
+# View results structure
+str(results)
+```
+
+### Step 4: Analyze Results
+
+The output includes mean similarity scores with confidence intervals:
+
+```{r analyze-results}
+# Extract results
+immigration_results <- results$immigration
+
+# Liberal-Illiberal difference scores (higher = more liberal positioning)
+head(immigration_results)
+#>   mean     sd  lowerci upperci dimension   Policy  Party Time    word
+#> 1 0.12  0.045    0.10    0.14  LibIllib immigration PartyA 2020 immigra
+#> 2 -0.08 0.052   -0.10   -0.06  LibIllib immigration PartyB 2020 immigra
+
+# Visualize positioning over time
+library(ggplot2)
+
+ggplot(immigration_results[immigration_results$dimension == "LibIllib", ], 
+       aes(x = word, y = mean, color = Party)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = lowerci, ymax = upperci), width = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Liberal-Illiberal Positioning on Immigration",
+    x = "Policy Term",
+    y = "Liberal-Illiberal Score",
+    caption = "Positive = more liberal, Negative = more illiberal"
+  ) +
+  theme_minimal() +
+  coord_flip()
+```
+
+## Available Dictionaries
+
+The package includes dictionaries for multiple policy domains:
+
+```{r dictionaries}
+data(dictionaries)
+names(dictionaries)
+#> [1] "immigration" "gender" ...
+
+# Each dictionary contains liberal and illiberal term lists
+# organized by policy-relevant concepts
+```
+
+## Understanding the Scores
+
+**Liberal-Illiberal (LibIllib) Score:**
+- Calculated as: `liberal_similarity - illiberal_similarity`
+- **Positive values**: Actor's language closer to liberal vocabulary
+- **Negative values**: Actor's language closer to illiberal vocabulary
+- **Near zero**: Neutral or ambiguous positioning
+
+**Individual Dimensions:**
+- `liberal`: Mean cosine similarity to liberal terms
+- `illiberal`: Mean cosine similarity to illiberal terms
+- `LibIllib`: The difference score (main measure of interest)
+
+## Advanced Usage
+
+### Custom Dictionaries
+
+You can create your own dictionaries following the package format:
+
+```{r custom-dict}
+# Create a custom dictionary data frame
+custom_dict <- data.frame(
+  country = "all",
+  term = NA,
+  climate_liberal = c("renewable", "sustainable", "green", NA),
+  climate_illiberal = c("hoax", "expensive", "unnecessary", NA),
+  stringsAsFactors = FALSE
+)
+
+# Add to dictionaries list
+dictionaries$climate <- custom_dict
+
+# Process it
+climate_dict <- process_dictionary(dictionaries, "climate")
+```
+
+### Filtering by Country
+
+If your dictionary includes country-specific terms:
+
+```{r country-filter}
+# The process_dictionary function filters to country == "all" by default
+# Modify the function call to include specific countries as needed
 ```
 
 ## Citation
 
-Please cite the package using the [pre print](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb)
+If you use this package in your research, please cite:
+
+```
+Wagner, F. (2024). illibindex: Measuring Liberal and Illiberal Rhetoric 
+in Political Discourse. R package version 0.1.0. 
+https://github.com/FraWagner/illibindex
+```
+
+## Related Work
+
+This package implements methods for measuring ideological positioning using word embeddings. For theoretical background and validation, see:
+
+- ["Measuring Illiberalism: Mapping Illiberalism in Seven Countries, 2000-2022."](https://preprints.apsanet.org/engage/apsa/article-details/67840ffc6dde43c9083af8cb) 
+- ["Opposition to Government and Back: How Illiberal Parties Shape Immigration Discourse and Party Competition"](https://www.cogitatiopress.com/politicsandgovernance/article/view/9609)
+
+
+---
