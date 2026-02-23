@@ -33,14 +33,14 @@ plot_libVillib_wordfacet <- function(
         all_lists <- lapply(files, function(f) {
           env <- new.env()
           load(f, envir = env)
-          return(ls(envir = env))
+          objs <- ls(envir = env)
+          return(get(objs[1], envir = env))
         })
-        all_lists <- unlist(all_lists)
-        df_results <- get(all_lists[[1]])
+        df_results <- all_lists[[1]]
       } else if (use_demo) {
         # Use demo data if no files found
-        message("No results files found. Using demo_results.")
-        df_results <- demo_results[[1]]
+        message("No results files found. Using demo_cossim_IT.")
+        df_results <- demo_cossim_IT[[1]]
       } else {
         stop("No results files found and use_demo = FALSE.")
       }

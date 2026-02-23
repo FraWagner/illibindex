@@ -65,11 +65,13 @@ calc_cosSim <- function(
     output_dir = embeddings_path
   )
   
-  terms <- process_dictionary(which = which)
-  
-  word_lists <- list(terms)
+  dict_data <- process_dictionary(which = which)
+  liberal_lists   <- dict_data$liberal
+  illiberal_lists <- dict_data$illiberal
+
+  word_lists <- list(dict_data$terms)
   names(word_lists) <- which
-  
+
   list_names <- names(word_lists)
   
   df_results <- data.frame()
@@ -100,9 +102,9 @@ calc_cosSim <- function(
         current_word <- current_word_list[word_idx]
         cat(crayon::blue(paste0("\n", current_word, "... ")))
         # liberal
-        liberal <- get(paste0(current_word, "_liberal"))
+        liberal <- liberal_lists[[current_word]]
         # illiberal
-        illiberal <- get(paste0(current_word, "_illiberal"))
+        illiberal <- illiberal_lists[[current_word]]
         # Making the custom dictionary
         liberal_dict <- dictionary(list(liberal_dict = liberal))
         illiberal_dict <- dictionary(list(illiberal_dict = illiberal))

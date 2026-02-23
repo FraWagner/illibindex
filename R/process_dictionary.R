@@ -75,5 +75,7 @@ process_dictionary <- function(dataset = dictionaries, which) {
     
     cat("Success!\n")
   }
+
+  return(list(terms = terms, liberal = liberal, illiberal = illiberal))
 }
 
