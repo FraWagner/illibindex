@@ -9,6 +9,7 @@ train_word_embeddings(
   model_name = "model1",
   country = "Italy",
   speaker_party = "Speaker_party",
+  year_var = "year",
   num_bootstraps = 100,
   window_size = 10,
   drop_parties = c("RE"),
@@ -24,6 +25,9 @@ train_word_embeddings(
 \item{country}{A string indicating the country (used in folder structure).}
 
 \item{speaker_party}{The docvar indicating actor name.}
+
+\item{year_var}{The name of the docvar containing the year (as an integer or
+coercible to integer). Defaults to \code{"year"}.}
 
 \item{num_bootstraps}{Number of bootstrap samples per year.}
 

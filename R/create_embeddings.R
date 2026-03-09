@@ -7,6 +7,8 @@
 #' @param model_name A custom name to label your saved models.
 #' @param country A string indicating the country (used in folder structure).
 #' @param speaker_party The docvar indicating actor name.
+#' @param year_var The name of the docvar containing the year (as an integer or
+#'   coercible to integer). Defaults to \code{"year"}.
 #' @param num_bootstraps Number of bootstrap samples per year.
 #' @param window_size The size of the context window.
 #' @param drop_parties A vector of actors to exclude.
@@ -36,6 +38,7 @@ train_word_embeddings <- function(
     model_name = "model1",
     country = "Italy",
     speaker_party = "Speaker_party",
+    year_var = "year",
     num_bootstraps = 100,
     window_size = 10,
     drop_parties = c("RE"),
@@ -70,7 +73,7 @@ train_word_embeddings <- function(
   actors <- actors[!(actors %in% drop_parties)]
 
   # Get unique years
-  docvars(corpus_all, "year") <- as.integer(substr(docvars(corpus_all, "year_month"), 1, 4))
+  docvars(corpus_all, "year") <- as.integer(docvars(corpus_all, year_var))
   years <- sort(unique(docvars(corpus_all, "year")))
 
   # Create output directory
