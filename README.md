@@ -114,11 +114,11 @@ head(corpus_ITA)
 train_word_embeddings(
   country = "Italy",
   model = "model1",
+  year_var = "year_months",
   output_dir = "output/embeddings",
   corpus = corpus_ITA,
   n_bootstrap = 100,
-  window_size = 6,
-  dim = 300
+  window_size = 6
 )
 ```
 
